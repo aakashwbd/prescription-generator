@@ -1,0 +1,74 @@
+import React from 'react'
+import {Stack, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import {PrescribeTable} from "../../../../styles/globalStyles";
+import {Box} from "@mui/system";
+import {PrescriptionDeleteBtn, PrescriptionTextBox, useStyles} from "../styled";
+import {Close} from "@mui/icons-material";
+
+const PlanTable = ({form, setForm}) => {
+    const classes = useStyles()
+
+    const planChangeHandler = (index, field, value) => {
+        let planArr = [...form.plan]
+        planArr[index][field] = value;
+        setForm(prevState => ({
+            ...prevState,
+            plan: planArr
+        }))
+    }
+
+    const addHandler = () => {
+        let isEmpty = form.plan.some((item) => item.name.length === 0)
+        if(!isEmpty){
+            setForm(prevState => ({
+                ...prevState,
+                plan: [...prevState.plan, {name: ""}]
+            }))
+        }
+    };
+
+    const removeHandler = (index) => {
+        if(index !== 0) {
+            let arr = form.plan.filter((item, i) => i !== index);
+            setForm(prevState => ({
+                ...prevState,
+                plan: arr
+            }))
+        }
+    };
+
+    return (
+        <Box className={classes.formBox}>
+            <TableContainer>
+                <PrescribeTable size="small">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Plan</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {form.plan.map((item, i) =>(
+                            <TableRow key={i}>
+                                <TableCell>
+                                    <Stack direction="row" spacing={1} alignItems="center">
+                                        <PrescriptionDeleteBtn tabIndex={-1} onClick={() => removeHandler(i)}>
+                                            <Close />
+                                        </PrescriptionDeleteBtn>
+                                        <PrescriptionTextBox
+                                            size="small"
+                                            value={item.name}
+                                            onChange={(e) => planChangeHandler(i, 'name', e.target.value)}
+                                            onBlur={addHandler}
+                                        />
+                                    </Stack>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </PrescribeTable>
+            </TableContainer>
+        </Box>
+    )
+}
+
+export default PlanTable
